@@ -1,0 +1,10 @@
+{
+  "name": "Delivery Route Assistant",
+  "short_name": "Route Assistant",
+  "description": "Local-first companion for preparing and running nightly delivery routes.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#08111d",
+  "theme_color": "#08111d"
+}
