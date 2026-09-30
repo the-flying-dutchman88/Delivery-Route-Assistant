@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0b1220">
+<title>Delivery Route Assistant V0 FIX4</title>
+<style>
+:root{--bg:#090d14;--panel:#111827;--panel2:#172033;--line:#273449;--text:#f4f7fb;--muted:#9aa8bc;--accent:#5aa9ff;--good:#35c77a;--warn:#f0b429;--bad:#ff6b6b;--shadow:0 12px 32px rgba(0,0,0,.28);--radius:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.top{position:sticky;top:0;z-index:20;background:rgba(9,13,20,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:calc(12px + env(safe-area-inset-top)) 16px 12px}
+.title{font-size:22px;font-weight:800;letter-spacing:-.02em}.subtitle{font-size:12px;color:var(--muted);margin-top:3px}
+.wrap{width:min(760px,100%);margin:0 auto;padding:14px}
+.card{background:linear-gradient(180deg,var(--panel),#0f1624);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:0 0 12px;box-shadow:var(--shadow)}
+.card h2,.card h3{margin:0 0 10px}.card h2{font-size:18px}.card h3{font-size:15px}
+.muted{color:var(--muted)}.tiny{font-size:12px}.small{font-size:13px}
+.row{display:flex;gap:10px;align-items:center}.row.wraprow{flex-wrap:wrap}.grow{flex:1}.stack{display:grid;gap:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.grid2{grid-template-columns:1fr}.wrap{padding:10px}.card{border-radius:14px;padding:14px}.title{font-size:21px}}
+.btn{border:1px solid var(--line);background:#1b2639;color:var(--text);border-radius:12px;padding:12px 14px;font-weight:700;min-height:46px}.btn:active{transform:translateY(1px)}.btn.primary{background:#2176d2;border-color:#2f8bf0}.btn.good{background:#167747;border-color:#259d62}.btn.warn{background:#805c0c;border-color:#a97d1d}.btn.bad{background:#7d2424;border-color:#a93b3b}.btn.ghost{background:transparent}.btn.block{width:100%}.btn.big{min-height:64px;font-size:20px}.btn:disabled{opacity:.45;cursor:not-allowed}
+input,textarea,select{width:100%;background:#0b1220;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:12px;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--accent)}textarea{min-height:140px;resize:vertical}
+label{display:grid;gap:6px;color:var(--muted);font-size:13px}.field{display:grid;gap:6px}.field>span{font-size:13px;color:var(--muted)}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);background:rgba(10,15,24,.98);border-top:1px solid var(--line);padding:6px max(6px,env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-right))}
+.nav button{border:0;background:transparent;color:var(--muted);min-height:58px;border-radius:11px;font-size:11px;font-weight:700;display:grid;place-items:center;align-content:center;gap:2px}.nav button.active{background:#17243a;color:#fff}.nav .ico{font-size:20px;line-height:1}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;border:1px solid var(--line);background:#111b2b;font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}.dot.good{background:var(--good)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--bad)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kpi{background:#0c1422;border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}.kpi strong{display:block;font-size:22px}.kpi span{font-size:11px;color:var(--muted)}
+.list{display:grid;gap:8px}.item{background:#0c1422;border:1px solid var(--line);border-radius:12px;padding:12px}.item-title{font-weight:800}.item-meta{color:var(--muted);font-size:12px;margin-top:4px}.item-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.item-actions .btn{padding:8px 10px;min-height:36px;font-size:13px}
+.status{padding:10px 12px;border-radius:11px;border:1px solid var(--line);background:#0c1422;font-size:13px}.status.good{border-color:#245f45}.status.warn{border-color:#6d5821}.status.bad{border-color:#703232}
+.stopline{display:grid;grid-template-columns:42px 1fr auto;gap:10px;align-items:center}.stopnum{height:38px;width:38px;border-radius:50%;display:grid;place-items:center;background:#17243a;font-weight:800}.stopline .actions{display:flex;gap:4px}.mini{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:#18243a;color:#fff;font-weight:800}
+.delivery{min-height:calc(100vh - 180px);display:flex;flex-direction:column;gap:12px}.delivery-address{font-size:30px;font-weight:900;letter-spacing:-.03em;line-height:1.05}.delivery-count{font-size:14px;color:var(--muted)}.delivery-items{display:grid;gap:8px;font-size:18px}.deliver-spacer{flex:1}.deliver-btn{width:100%;min-height:82px;border:0;border-radius:18px;background:#17854f;color:#fff;font-size:24px;font-weight:900;box-shadow:0 12px 26px rgba(20,130,77,.25)}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;background:#1d2b42;border:1px solid #3a4d69;color:#fff;padding:11px 14px;border-radius:12px;max-width:min(90vw,520px);box-shadow:var(--shadow);font-size:13px}.hidden{display:none!important}
+hr{border:0;border-top:1px solid var(--line);margin:14px 0}.code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#08101d;border:1px solid var(--line);border-radius:10px;padding:10px;white-space:pre-wrap;word-break:break-word;font-size:12px}.photo-thumb{width:86px;height:86px;border-radius:10px;object-fit:cover;border:1px solid var(--line)}
+.empty{padding:22px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}.section-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}.section-title h2{margin:0}.pill-good{color:#8bf1b8}.pill-warn{color:#ffd470}.pill-bad{color:#ff9a9a}
+</style>
+</head>
+<body>
+<header class="top"><div class="title">Delivery Route Assistant</div><div class="subtitle">V0 FIX4 · single-file phone edition · local-first</div></header>
+<main class="wrap" id="app"></main>
+<nav class="nav" id="nav">
+<button data-view="home" class="active"><span class="ico">⌂</span><span>Home</span></button>
+<button data-view="routes"><span class="ico">≡</span><span>Routes</span></button>
+<button data-view="run"><span class="ico">＋</span><span>Run</span></button>
+<button data-view="deliver"><span class="ico">▶</span><span>Deliver</span></button>
+<button data-view="data"><span class="ico">⋯</span><span>Data</span></button>
+</nav>
+<div id="toast" class="toast hidden"></div>
+<input id="cameraInput" class="hidden" type="file" accept="image/*" capture="environment">
+<input id="backupInput" class="hidden" type="file" accept="application/json,.json">
+<script>
+(function(){
+'use strict';
+const VERSION='V0 FIX4';
+const STATE_KEY='dra_v0_fix4_state_v1';
+const PHOTO_DB='DRA_V0_FIX4_PHOTOS';
+const PHOTO_STORE='photos';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const uid=p=>(p||'id')+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
+const nowIso=()=>new Date().toISOString();
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtDate=x=>x?new Date(x).toLocaleString():'';
+const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
+let storageMode='memory';
+let state={routes:[],runs:[],currentRunId:null,settings:{createdAt:nowIso()}};
+let view='home';
+let photoDb=null;
+let sessionPhotos=new Map();
+
+function defaultState(){return{routes:[],runs:[],currentRunId:null,settings:{createdAt:nowIso(),version:VERSION}}}
+function toast(msg,ms=2300){const t=$('#toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.add('hidden'),ms)}
+function safeJsonParse(s,fallback){try{return JSON.parse(s)}catch{return fallback}}
+function saveState(){
+  state.settings=state.settings||{};state.settings.version=VERSION;state.settings.updatedAt=nowIso();
+  try{localStorage.setItem(STATE_KEY,JSON.stringify(state));storageMode='localStorage';return true}catch(e){storageMode='memory';return false}
+}
+function loadState(){
+  try{const raw=localStorage.getItem(STATE_KEY);if(raw){const parsed=JSON.parse(raw);if(parsed&&Array.isArray(parsed.routes)&&Array.isArray(parsed.runs)){state=parsed;storageMode='localStorage';return}}storageMode='localStorage';saveState()}catch(e){state=defaultState();storageMode='memory'}
+}
+function openPhotoDb(){return new Promise(resolve=>{if(!('indexedDB'in window)){resolve(null);return}let req;try{req=indexedDB.open(PHOTO_DB,1)}catch{resolve(null);return}req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(PHOTO_STORE))db.createObjectStore(PHOTO_STORE,{keyPath:'id'})};req.onsuccess=()=>{photoDb=req.result;resolve(photoDb)};req.onerror=()=>resolve(null)})}
+function putPhoto(rec){return new Promise(resolve=>{if(!photoDb){sessionPhotos.set(rec.id,rec);resolve(false);return}try{const tx=photoDb.transaction(PHOTO_STORE,'readwrite');tx.objectStore(PHOTO_STORE).put(rec);tx.oncomplete=()=>resolve(true);tx.onerror=()=>{sessionPhotos.set(rec.id,rec);resolve(false)}}catch{sessionPhotos.set(rec.id,rec);resolve(false)}})}
+function getPhoto(id){return new Promise(resolve=>{if(sessionPhotos.has(id)){resolve(sessionPhotos.get(id));return}if(!photoDb){resolve(null);return}try{const r=photoDb.transaction(PHOTO_STORE).objectStore(PHOTO_STORE).get(id);r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>resolve(null)}catch{resolve(null)}})}
+function deletePhoto(id){return new Promise(resolve=>{sessionPhotos.delete(id);if(!photoDb){resolve();return}try{const tx=photoDb.transaction(PHOTO_STORE,'readwrite');tx.objectStore(PHOTO_STORE).delete(id);tx.oncomplete=()=>resolve();tx.onerror=()=>resolve()}catch{resolve()}})}
+function clearPhotos(){return new Promise(resolve=>{sessionPhotos.clear();if(!photoDb){resolve();return}try{const tx=photoDb.transaction(PHOTO_STORE,'readwrite');tx.objectStore(PHOTO_STORE).clear();tx.oncomplete=()=>resolve();tx.onerror=()=>resolve()}catch{resolve()}})}
+function currentRun(){return state.runs.find(r=>r.id===state.currentRunId)||null}
+function routeById(id){return state.routes.find(r=>r.id===id)||null}
+function runStats(r){const s=r?.stops||[];return{total:s.length,done:s.filter(x=>x.status==='delivered').length,problems:s.filter(x=>x.status==='problem').length}}
+function normalizeStop(o,i=0){
+ const lat=o.lat??o.latitude??null,lon=o.lon??o.lng??o.longitude??null;
+ let items=o.items||o.delivery||o.product||'';if(!Array.isArray(items)){items=String(items||'').split(/[|;]/).filter(Boolean).map(x=>({label:x.trim(),qty:1}))}else items=items.map(x=>typeof x==='string'?{label:x,qty:1}:{label:x.label||x.name||'Item',qty:Number(x.qty||x.quantity||1)});
+ return{id:o.id||uid('stop'),address:String(o.address||o.adresse||o.street||'').trim(),postalCode:String(o.postalCode||o.postcode||o.zip||'').trim(),city:String(o.city||o.by||'').trim(),recipient:String(o.recipient||o.name||'').trim(),items,note:String(o.note||o.notes||'').trim(),lat:(lat!==null&&lat!==''&&!Number.isNaN(Number(lat)))?Number(lat):null,lon:(lon!==null&&lon!==''&&!Number.isNaN(Number(lon)))?Number(lon):null,status:o.status||'pending',createdAt:o.createdAt||nowIso(),deliveredAt:o.deliveredAt||null,problemAt:o.problemAt||null,source:o.source||'manual',confidence:o.confidence??1,order:i};
+}
+class StopParser{
+ parse(text){text=String(text||'').trim();if(!text)return[];if(text.startsWith('[')||text.startsWith('{'))return this.parseJson(text);return this.parseCsv(text)}
+ parseJson(text){const obj=JSON.parse(text);const arr=Array.isArray(obj)?obj:(obj.stops||[]);if(!Array.isArray(arr))throw new Error('JSON must be an array of stops or {"stops": [...]}');return arr.map(normalizeStop)}
+ parseCsv(text){const lines=text.split(/\r?\n/).filter(x=>x.trim());if(!lines.length)return[];const parseLine=line=>{let out=[],cur='',q=false;for(let i=0;i<line.length;i++){const c=line[i];if(c==='"'){if(q&&line[i+1]==='"'){cur+='"';i++}else q=!q}else if(c===','&&!q){out.push(cur);cur=''}else cur+=c}out.push(cur);return out.map(x=>x.trim())};const rows=lines.map(parseLine);const head=rows[0].map(x=>x.toLowerCase());const known=['address','adresse','postalcode','postcode','zip','city','by','recipient','name','items','delivery','product','note','lat','latitude','lon','lng','longitude'];const hasHeader=head.some(h=>known.includes(h));let data=hasHeader?rows.slice(1):rows;return data.map((r,i)=>{let o={};if(hasHeader)head.forEach((h,j)=>o[h]=r[j]??'');else{o.address=r[0]||'';o.items=r[1]||'';o.lat=r[2]||'';o.lon=r[3]||''}return normalizeStop(o,i)}).filter(s=>s.address)}
+}
+class AddressProvider{async resolve(stop){if(Number.isFinite(stop.lat)&&Number.isFinite(stop.lon))return{ok:true,lat:stop.lat,lon:stop.lon,source:'provided'};return{ok:false,reason:'No coordinates. FIX4 never guesses an address location.'}}}
+class RouteOptimizer{optimize(stops){if(!stops.length)return{ok:true,stops:[]};if(stops.some(s=>!Number.isFinite(s.lat)||!Number.isFinite(s.lon)))return{ok:false,reason:'One or more stops have no coordinates. Import order preserved.'};const dist=(a,b)=>{const R=6371e3,p1=a.lat*Math.PI/180,p2=b.lat*Math.PI/180,dp=(b.lat-a.lat)*Math.PI/180,dl=(b.lon-a.lon)*Math.PI/180,x=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;return 2*R*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))};let left=stops.slice(),ordered=[left.shift()];while(left.length){let last=ordered[ordered.length-1],best=0,bestD=Infinity;left.forEach((s,i)=>{const d=dist(last,s);if(d<bestD){bestD=d;best=i}});ordered.push(left.splice(best,1)[0])}return{ok:true,stops:ordered.map((s,i)=>({...s,order:i})),method:'nearest-neighbour test optimizer'}}}
+class PhotoScanner{async ingest(file,runId){if(!file)throw new Error('No photo selected');const id=uid('photo');const rec={id,runId,name:file.name||('sheet-'+Date.now()+'.jpg'),type:file.type||'image/jpeg',size:file.size||0,createdAt:nowIso(),blob:file};const persisted=await putPhoto(rec);return{id,name:rec.name,type:rec.type,size:rec.size,createdAt:rec.createdAt,persisted}}}
+const parser=new StopParser(),addressProvider=new AddressProvider(),optimizer=new RouteOptimizer(),scanner=new PhotoScanner();
+
+function setView(v){view=v;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));render();window.scrollTo({top:0,behavior:'instant'})}
+function navBind(){document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>setView(b.dataset.view))}
+function render(){const app=$('#app');if(view==='home')app.innerHTML=homeHtml();else if(view==='routes')app.innerHTML=routesHtml();else if(view==='run')app.innerHTML=runHtml();else if(view==='deliver')app.innerHTML=deliverHtml();else app.innerHTML=dataHtml();bindView()}
+function capabilities(){return{file:location.protocol==='file:',camera:!!($('#cameraInput')&&window.FileReader),geo:'geolocation'in navigator,idb:!!photoDb,ls:storageMode==='localStorage',online:navigator.onLine}}
+function homeHtml(){const r=currentRun(),c=capabilities(),st=r?runStats(r):null;return`
+<div class="card"><div class="section-title"><h2>Ready</h2><span class="badge"><span class="dot good"></span>Single file</span></div><div class="status good"><strong>No server required.</strong><br>This entire app is inside this HTML file and can be opened locally.</div></div>
+${r?`<div class="card"><div class="section-title"><h2>Current run</h2><span class="badge">${esc(r.status)}</span></div><div class="item-title">${esc(routeById(r.routeId)?.name||'Unnamed route')} · ${esc(r.date)}</div><div class="kpis" style="margin-top:12px"><div class="kpi"><strong>${st.total}</strong><span>Stops</span></div><div class="kpi"><strong>${st.done}</strong><span>Delivered</span></div><div class="kpi"><strong>${st.problems}</strong><span>Problems</span></div></div><div class="grid2" style="margin-top:12px"><button class="btn primary" data-action="open-run">Review run</button><button class="btn good" data-action="go-deliver">Deliver</button></div></div>`:`<div class="card"><h2>No current run</h2><p class="muted small">Create a route, then create today's run.</p><button class="btn primary block" data-action="new-run">Create today's run</button></div>`}
+<div class="card"><h2>Phone readiness</h2><div class="stack">
+<div class="status ${c.file?'good':'warn'}"><strong>Runtime:</strong> ${c.file?'Local file · offline by definition':'Browser page'} </div>
+<div class="status ${c.ls?'good':'warn'}"><strong>Route database:</strong> ${c.ls?'Persistent localStorage':'Memory only in this viewer'} </div>
+<div class="status ${c.idb?'good':'warn'}"><strong>Sheet-photo storage:</strong> ${c.idb?'Persistent IndexedDB':'Session-only fallback'} </div>
+<div class="status ${c.camera?'good':'warn'}"><strong>Camera/photo picker:</strong> ${c.camera?'Available':'Unavailable'} </div>
+<div class="status ${c.geo?'good':'warn'}"><strong>GPS API:</strong> ${c.geo?'Present · permission still required':'Unavailable in this viewer'} </div></div>
+<div class="grid2" style="margin-top:12px"><button class="btn" data-action="test-camera">Test camera/photo</button><button class="btn" data-action="test-gps">Test GPS</button></div></div>
+<div class="card"><h2>Foundation status</h2><p class="muted small">Scanner interface, parser interface, address-provider interface, test optimizer, route database, daily runs, route review and delivery runner are all active in this file.</p><button class="btn ghost block" data-action="selftest">Run self-tests</button></div>`}
+function routesHtml(){return`<div class="card"><h2>Routes</h2><div class="grid2"><label>Route name<input id="routeName" placeholder="e.g. Route 12"></label><label>Notes<input id="routeNotes" placeholder="Optional"></label></div><button class="btn primary block" style="margin-top:10px" data-action="add-route">Create route</button></div><div class="card"><div class="section-title"><h2>Saved routes</h2><span class="badge">${state.routes.length}</span></div>${state.routes.length?`<div class="list">${state.routes.map(r=>`<div class="item"><div class="item-title">${esc(r.name)}</div><div class="item-meta">${esc(r.notes||'No notes')} · created ${esc(new Date(r.createdAt).toLocaleDateString())}</div><div class="item-actions"><button class="btn primary" data-action="route-new-run" data-id="${r.id}">New run</button><button class="btn bad" data-action="delete-route" data-id="${r.id}">Delete</button></div></div>`).join('')}</div>`:`<div class="empty">No routes yet.</div>`}</div>`}
+function runHtml(){const r=currentRun();if(!r)return`<div class="card"><h2>Create daily run</h2>${state.routes.length?`<label>Route<select id="runRoute">${state.routes.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select></label><label style="margin-top:10px">Date<input id="runDate" type="date" value="${today()}"></label><button class="btn primary block" style="margin-top:12px" data-action="create-run">Create run</button>`:`<div class="empty">Create a route first.</div><button class="btn primary block" style="margin-top:10px" data-action="go-routes">Go to routes</button>`}</div>`;
+const stats=runStats(r);return`<div class="card"><div class="section-title"><div><h2>${esc(routeById(r.routeId)?.name||'Route')}</h2><div class="muted small">${esc(r.date)} · ${esc(r.status)}</div></div><span class="badge">${stats.done}/${stats.total}</span></div><div class="grid2"><button class="btn" data-action="scan">Take/add sheet photo</button><button class="btn" data-action="sample">Load test stops</button></div></div>
+<div class="card"><h2>Manual / test stop import</h2><p class="muted tiny">CSV: address,items,lat,lon. JSON arrays are also accepted. Real DOA photo parsing comes in V1.</p><textarea id="importText" placeholder="address,items,lat,lon&#10;Testvej 1,Magazine,55.67,12.56"></textarea><button class="btn primary block" data-action="import-stops">Import stops</button></div>
+<div class="card"><div class="section-title"><h2>Sheet photos</h2><span class="badge">${(r.scans||[]).length}</span></div>${(r.scans||[]).length?`<div class="list">${r.scans.map(p=>`<div class="item"><div class="item-title">${esc(p.name)}</div><div class="item-meta">${Math.round((p.size||0)/1024)} KB · ${p.persisted?'saved locally':'session only'}</div><div class="item-actions"><button class="btn" data-action="view-photo" data-id="${p.id}">View</button><button class="btn bad" data-action="remove-photo" data-id="${p.id}">Remove</button></div></div>`).join('')}</div>`:`<div class="empty">No sheet photos yet.</div>`}</div>
+<div class="card"><div class="section-title"><h2>Route review</h2><span class="badge">${r.stops.length} stops</span></div>${r.stops.length?`<div class="list">${r.stops.map((s,i)=>`<div class="item stopline"><div class="stopnum">${i+1}</div><div><div class="item-title">${esc(s.address||'No address')}</div><div class="item-meta">${esc([s.postalCode,s.city].filter(Boolean).join(' '))}${s.items.length?' · '+esc(s.items.map(x=>x.label+(x.qty>1?' ×'+x.qty:'')).join(', ')):''}${Number.isFinite(s.lat)&&Number.isFinite(s.lon)?' · coordinates ready':' · unresolved coordinates'}</div></div><div class="actions"><button class="mini" data-action="up-stop" data-id="${s.id}" ${i===0?'disabled':''}>↑</button><button class="mini" data-action="down-stop" data-id="${s.id}" ${i===r.stops.length-1?'disabled':''}>↓</button></div></div>`).join('')}</div><div class="grid2" style="margin-top:12px"><button class="btn" data-action="optimize">Optimize test route</button><button class="btn good" data-action="start-delivery">Start delivery</button></div>`:`<div class="empty">Import stops or load the sample.</div>`}</div>`}
+function activeStopInfo(r){if(!r||!r.stops?.length)return null;let idx=r.activeIndex??0;idx=clamp(idx,0,r.stops.length-1);let start=idx;for(let i=0;i<r.stops.length;i++){const j=(start+i)%r.stops.length;if(!['delivered'].includes(r.stops[j].status))return{stop:r.stops[j],index:j}}return null}
+function deliverHtml(){const r=currentRun();if(!r)return`<div class="card"><h2>No run selected</h2><button class="btn primary block" data-action="new-run">Create run</button></div>`;const a=activeStopInfo(r),st=runStats(r);if(!r.stops.length)return`<div class="card"><h2>No stops</h2><p class="muted">Add stops from the Run screen first.</p><button class="btn primary block" data-action="open-run">Open run</button></div>`;if(!a)return`<div class="card"><h2>Route complete</h2><div class="kpis"><div class="kpi"><strong>${st.total}</strong><span>Total</span></div><div class="kpi"><strong>${st.done}</strong><span>Delivered</span></div><div class="kpi"><strong>${st.problems}</strong><span>Problems</span></div></div><button class="btn primary block" style="margin-top:12px" data-action="open-run">Review run</button></div>`;const s=a.stop;return`<div class="delivery"><div class="card"><div class="delivery-count">STOP ${a.index+1} / ${r.stops.length} · ${st.done} delivered</div><div class="delivery-address" style="margin-top:12px">${esc(s.address)}</div><div class="muted" style="margin-top:5px">${esc([s.postalCode,s.city].filter(Boolean).join(' '))}</div>${s.recipient?`<div class="small muted" style="margin-top:8px">Recipient: ${esc(s.recipient)}</div>`:''}<hr><div class="delivery-items">${s.items.length?s.items.map(x=>`<div>${esc(x.label)}${x.qty>1?` <strong>×${x.qty}</strong>`:''}</div>`).join(''):`<div class="muted">No delivery item details</div>`}</div>${s.note?`<hr><div class="small">${esc(s.note)}</div>`:''}</div><div class="deliver-spacer"></div><button class="deliver-btn" data-action="delivered" data-id="${s.id}">DELIVERED</button><div class="grid2"><button class="btn warn" data-action="problem" data-id="${s.id}">Problem</button><button class="btn" data-action="skip" data-id="${s.id}">Skip</button></div><button class="btn ghost block" data-action="open-run">Route review</button></div>`}
+function dataHtml(){const runs=state.runs.length,stops=state.runs.reduce((n,r)=>n+(r.stops?.length||0),0),photos=state.runs.reduce((n,r)=>n+(r.scans?.length||0),0);return`<div class="card"><h2>Local data</h2><div class="kpis"><div class="kpi"><strong>${state.routes.length}</strong><span>Routes</span></div><div class="kpi"><strong>${runs}</strong><span>Runs</span></div><div class="kpi"><strong>${stops}</strong><span>Stops</span></div></div><div class="status ${storageMode==='localStorage'?'good':'warn'}" style="margin-top:12px"><strong>Database mode:</strong> ${esc(storageMode)}<br><span class="tiny muted">Sheet photos: ${photoDb?'IndexedDB persistent':'session-only fallback'} · ${photos} registered</span></div></div>
+<div class="card"><h2>Backup</h2><p class="muted small">Backup includes routes, runs, stops, events and sheet-photo metadata. Photo image files themselves are intentionally excluded.</p><div class="grid2"><button class="btn primary" data-action="export">Export JSON</button><button class="btn" data-action="import-backup">Import JSON</button></div><textarea id="backupText" placeholder="Backup JSON can also be copied/pasted here."></textarea><div class="grid2"><button class="btn" data-action="backup-to-text">Show backup here</button><button class="btn" data-action="restore-text">Restore pasted JSON</button></div></div>
+<div class="card"><h2>Danger zone</h2><button class="btn bad block" data-action="clear-all">Clear all local route data and photos</button></div>`}
+
+function bindView(){
+ document.querySelectorAll('[data-action]').forEach(el=>el.onclick=()=>handleAction(el.dataset.action,el.dataset.id));
+}
+async function handleAction(a,id){
+ if(a==='new-run'){setView('run');return}if(a==='go-routes'){setView('routes');return}if(a==='open-run'){setView('run');return}if(a==='go-deliver'){setView('deliver');return}
+ if(a==='add-route'){const n=$('#routeName')?.value.trim(),notes=$('#routeNotes')?.value.trim();if(!n){toast('Enter a route name');return}state.routes.push({id:uid('route'),name:n,notes,createdAt:nowIso()});saveState();render();toast('Route created');return}
+ if(a==='delete-route'){if(state.runs.some(r=>r.routeId===id)){toast('Cannot delete: this route has runs');return}if(confirm('Delete this route?')){state.routes=state.routes.filter(r=>r.id!==id);saveState();render()}return}
+ if(a==='route-new-run'){state.currentRunId=null;setView('run');setTimeout(()=>{const sel=$('#runRoute');if(sel)sel.value=id},0);return}
+ if(a==='create-run'){const routeId=$('#runRoute')?.value,date=$('#runDate')?.value||today();if(!routeId){toast('Choose a route');return}const r={id:uid('run'),routeId,date,status:'draft',createdAt:nowIso(),startedAt:null,completedAt:null,activeIndex:0,stops:[],events:[],scans:[]};state.runs.unshift(r);state.currentRunId=r.id;saveState();render();toast('Daily run created');return}
+ if(a==='sample'){const r=currentRun();if(!r)return;r.stops=[
+ normalizeStop({address:'Test stop A',items:'Magazine',lat:55.6800,lon:12.5700,source:'sample'},0),
+ normalizeStop({address:'Test stop B',items:'Letters',lat:55.6760,lon:12.5660,source:'sample'},1),
+ normalizeStop({address:'Test stop C',items:'Package',lat:55.6830,lon:12.5610,source:'sample'},2),
+ normalizeStop({address:'Test stop D',items:'Magazine;Letters',lat:55.6720,lon:12.5750,source:'sample'},3)];r.events.push({at:nowIso(),type:'sample_loaded'});saveState();render();toast('4 test stops loaded');return}
+ if(a==='import-stops'){const r=currentRun(),txt=$('#importText')?.value||'';try{const stops=parser.parse(txt);if(!stops.length){toast('No valid stops found');return}r.stops=stops.map((s,i)=>({...s,order:i}));r.events.push({at:nowIso(),type:'manual_import',count:stops.length});saveState();render();toast(stops.length+' stops imported')}catch(e){toast('Import error: '+e.message,4200)}return}
+ if(a==='up-stop'||a==='down-stop'){const r=currentRun(),i=r.stops.findIndex(s=>s.id===id);if(i<0)return;const j=a==='up-stop'?i-1:i+1;if(j<0||j>=r.stops.length)return;[r.stops[i],r.stops[j]]=[r.stops[j],r.stops[i]];r.stops.forEach((s,k)=>s.order=k);saveState();render();return}
+ if(a==='optimize'){const r=currentRun(),res=optimizer.optimize(r.stops);if(!res.ok){toast(res.reason,4000);return}r.stops=res.stops;r.events.push({at:nowIso(),type:'optimized',method:res.method});saveState();render();toast('Test route optimized');return}
+ if(a==='start-delivery'){const r=currentRun();if(!r?.stops.length){toast('No stops to deliver');return}r.status='active';r.startedAt=r.startedAt||nowIso();r.events.push({at:nowIso(),type:'delivery_started'});saveState();setView('deliver');return}
+ if(a==='delivered'||a==='problem'||a==='skip'){const r=currentRun(),i=r.stops.findIndex(s=>s.id===id);if(i<0)return;const s=r.stops[i],t=nowIso();if(a==='delivered'){s.status='delivered';s.deliveredAt=t}else if(a==='problem'){s.status='problem';s.problemAt=t}else{s.status='skipped'}r.events.push({at:t,type:a,stopId:id,address:s.address});r.activeIndex=(i+1)%r.stops.length;const stats=runStats(r);if(stats.done===stats.total){r.status='completed';r.completedAt=t}saveState();render();toast(a==='delivered'?'Delivered':a==='problem'?'Marked problem':'Skipped');return}
+ if(a==='scan'||a==='test-camera'){const inp=$('#cameraInput');inp.dataset.mode=a;inp.click();return}
+ if(a==='test-gps'){testGps();return}
+ if(a==='view-photo'){const rec=await getPhoto(id);if(!rec?.blob){toast('Photo is not available in this session/storage');return}const url=URL.createObjectURL(rec.blob);const w=window.open(url,'_blank');if(!w)toast('Viewer blocked opening the photo');setTimeout(()=>URL.revokeObjectURL(url),60000);return}
+ if(a==='remove-photo'){const r=currentRun();if(!r)return;await deletePhoto(id);r.scans=(r.scans||[]).filter(p=>p.id!==id);saveState();render();toast('Photo removed');return}
+ if(a==='export'){exportBackup();return}if(a==='backup-to-text'){$('#backupText').value=JSON.stringify(exportObject(),null,2);return}
+ if(a==='import-backup'){$('#backupInput').click();return}if(a==='restore-text'){restoreBackup($('#backupText')?.value||'');return}
+ if(a==='clear-all'){if(confirm('Clear ALL route data and locally stored sheet photos?')){state=defaultState();saveState();await clearPhotos();render();toast('Local data cleared')}return}
+ if(a==='selftest'){runSelfTests();return}
+}
+async function testGps(){if(!navigator.geolocation){toast('GPS API is unavailable in this browser/viewer',4000);return}toast('Requesting GPS permission…',5000);navigator.geolocation.getCurrentPosition(p=>{toast(`GPS works · accuracy about ${Math.round(p.coords.accuracy)} m. Test position was not stored.`,5000)},e=>{toast('GPS blocked/unavailable: '+e.message,6000)},{enableHighAccuracy:true,timeout:12000,maximumAge:0})}
+function exportObject(){return{format:'DeliveryRouteAssistantBackup',version:VERSION,exportedAt:nowIso(),note:'Sheet photo image blobs are excluded.',state}}
+function exportBackup(){const txt=JSON.stringify(exportObject(),null,2);try{const blob=new Blob([txt],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='DeliveryRouteAssistant-Backup-'+today()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Backup export started')}catch{$('#backupText')&&($('#backupText').value=txt);toast('Download blocked; backup JSON shown in the text box')}}
+function restoreBackup(txt){try{const o=JSON.parse(txt);const s=o.state||o;if(!Array.isArray(s.routes)||!Array.isArray(s.runs))throw new Error('Not a valid backup');state=s;state.currentRunId=state.currentRunId&&state.runs.some(r=>r.id===state.currentRunId)?state.currentRunId:(state.runs[0]?.id||null);saveState();render();toast('Backup restored')}catch(e){toast('Restore failed: '+e.message,5000)}}
+function runSelfTests(){let pass=0,total=0,fail=[];const t=(name,fn)=>{total++;try{if(fn())pass++;else fail.push(name)}catch{fail.push(name)}};t('CSV parser',()=>parser.parse('address,items,lat,lon\nA,Mail,55,12').length===1);t('JSON parser',()=>parser.parse('[{"address":"A"}]')[0].address==='A');t('Unresolved address safety',()=>optimizer.optimize([normalizeStop({address:'A'})]).ok===false);t('Optimizer',()=>optimizer.optimize([normalizeStop({address:'A',lat:55,lon:12}),normalizeStop({address:'B',lat:55.1,lon:12.1})]).ok===true);t('State model',()=>Array.isArray(state.routes)&&Array.isArray(state.runs));toast(`${pass}/${total} self-tests passed${fail.length?' · failed: '+fail.join(', '):''}`,fail.length?6000:3500)}
+
+$('#cameraInput').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;const mode=e.target.dataset.mode;if(mode==='test-camera'){toast('Camera/photo picker works · '+Math.round(f.size/1024)+' KB selected. Nothing stored.',5000);e.target.value='';return}const r=currentRun();if(!r){toast('Create a run first');e.target.value='';return}try{const meta=await scanner.ingest(f,r.id);r.scans=r.scans||[];r.scans.push(meta);r.events.push({at:nowIso(),type:'sheet_photo_added',photoId:meta.id,persisted:meta.persisted});saveState();render();toast(meta.persisted?'Sheet photo saved locally':'Photo added for this session; persistent photo storage is blocked')}catch(err){toast('Photo error: '+err.message,5000)}e.target.value=''});
+$('#backupInput').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const rd=new FileReader();rd.onload=()=>restoreBackup(String(rd.result||''));rd.onerror=()=>toast('Could not read backup file');rd.readAsText(f);e.target.value=''});
+window.addEventListener('online',()=>render());window.addEventListener('offline',()=>render());
+loadState();navBind();openPhotoDb().then(()=>render());render();
+})();
+</script>
+</body>
+</html>
